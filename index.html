@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, { delimiters: [{left: '$', right: '$', display: false}], throwOnError: false });"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -175,14 +176,24 @@
                 { id: 'mab', title: 'Multi-Armed Bandit', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Multi-Armed Bandit Problem</h2>
                     <p class="text-lg text-gray-700 mb-6">The MAB problem exemplifies the exploration-exploitation tradeoff. The agent must choose between multiple options (arms) to maximize total reward, without knowing which option is best. It must 'exploit' the best-known option but also 'explore' others to find potentially better ones.</p>
-                    <div class="card p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Action-Value Estimation</h3>
-                        <p class="text-gray-600">We estimate the value of each action $Q(a)$ by averaging the rewards received from that action. The incremental update rule is:</p>
-                        <div class="formula" data-katex="Q_{n+1} = Q_n + \\frac{1}{n}(R_n - Q_n)"></div>
-                        <h3 class="text-xl font-semibold text-gray-900 mt-4 mb-2">ε-Greedy Policy</h3>
-                        <p class="text-gray-600">A simple and effective way to balance exploration and exploitation. With probability $1-\epsilon$, we choose the best action (exploit). With probability $\epsilon$, we choose a random action (explore).</p>
-                        <div class="formula" data-katex="A_t = \\begin{cases} \\arg\\max_a Q_t(a) & \\text{w.p. } 1 - \\epsilon \\\\ \\text{random action} & \\text{w.p. } \\epsilon \\end{cases}"></div>
-                        <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-4">Interactive Bandit Simulation</h3>
+                    <div class="space-y-6">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Action-Value Estimation & ε-Greedy</h3>
+                            <p class="text-gray-600">We estimate the value of each action $Q(a)$ by averaging rewards. The ε-Greedy policy balances exploring random actions with exploiting the current best action.</p>
+                            <div class="formula" data-katex="Q_{n+1} = Q_n + \\frac{1}{n}(R_n - Q_n)"></div>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Bandit Gradient Algorithm</h3>
+                             <p class="text-gray-600">Instead of estimating action values, this method learns a preference $H_t(a)$ for each action. Preferences are updated via stochastic gradient ascent. Actions are then selected via a softmax distribution over preferences.</p>
+                             <div class="formula" data-katex="H_{t+1}(A_t) = H_t(A_t) + \\alpha(R_t - \\bar{R}_t)(1 - \\pi_t(A_t))"></div>
+                        </div>
+                         <div class="card p-6 rounded-lg">
+                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Associative Search (Contextual Bandits)</h3>
+                             <p class="text-gray-600">This is an extension where the agent is given a "context" or state before making a choice. The goal is to learn the best action for each context, effectively learning a policy $\\pi(a|s)$ instead of just finding the single best action overall.</p>
+                        </div>
+                    </div>
+                    <div class="card p-6 rounded-lg mt-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-4">Interactive Bandit Simulation (ε-Greedy)</h3>
                         <div class="flex items-center space-x-4 mb-4">
                             <label for="epsilon-slider" class="text-gray-600">Exploration Rate (ε):</label>
                             <input type="range" id="epsilon-slider" min="0" max="1" step="0.01" value="0.1" class="w-48">
@@ -210,15 +221,20 @@
                 `},
                 { id: 'mdp', title: 'Markov Decision Processes', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">(Finite) Markov Decision Processes (MDP)</h2>
-                    <p class="text-lg text-gray-700 mb-6">An MDP is a formal framework for RL problems. A key assumption is the Markov Property: the future is independent of the past given the present. An MDP is defined by a tuple $(S, A, P, R, \gamma)$.</p>
-                    <div class="card p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Value Functions & Bellman Equations</h3>
-                        <p class="text-gray-600">The state-value function $v_{\pi}(s)$ is the expected return starting from state $s$ and following policy $\pi$.</p>
-                        <div class="formula" data-katex="v_\\pi(s) = \\mathbb{E}_\\pi[G_t | S_t = s]"></div>
-                        <p class="text-gray-600 mt-4">The action-value function $q_{\pi}(s, a)$ is the expected return starting from state $s$, taking action $a$, and then following policy $\pi$.</p>
-                         <div class="formula" data-katex="q_\\pi(s, a) = \\mathbb{E}_\\pi[G_t | S_t = s, A_t = a]"></div>
-                        <p class="text-gray-600 mt-4">The Bellman expectation equation expresses the value of a state in terms of the values of successor states, creating a recursive relationship:</p>
-                        <div class="formula" data-katex="\\begin{aligned}v_\\pi(s) = \\sum_{a} \\pi(a|s) \\sum_{s', r} & p(s', r | s, a) \\\\ & \\cdot [r + \\gamma v_\\pi(s')].\\end{aligned}"></div>
+                    <p class="text-lg text-gray-700 mb-6">An MDP is a formal framework for RL problems. A key assumption is the Markov Property: the future is independent of the past given the present. An MDP is defined by a tuple $(S, A, P, R, \\gamma)$.</p>
+                    <div class="space-y-6">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Value Functions & Bellman Equations</h3>
+                            <p class="text-gray-600">The Bellman expectation equation expresses the value of a state in terms of the values of successor states, creating a recursive relationship:</p>
+                            <div class="formula" data-katex="\\begin{aligned}v_\\pi(s) = \\sum_{a} \\pi(a|s) \\sum_{s', r} & p(s', r | s, a) \\\\ & \\cdot [r + \\gamma v_\\pi(s')].\\end{aligned}"></div>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Optimal Value Functions & Policies</h3>
+                            <p class="text-gray-600">An optimal policy $\\pi_*$ is one that maximizes the expected return from any state. There is always at least one such policy. Optimal policies share the same optimal value functions, $v_*(s)$ and $q_*(s,a)$. The Bellman optimality equations show how they relate:</p>
+                            <div class="formula" data-katex="v_*(s) = \\max_a \\sum_{s', r} p(s', r | s, a) [r + \\gamma v_*(s')]"></div>
+                        </div>
+                    </div>
+                    <div class="card p-6 rounded-lg mt-6">
                         <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-4">Interactive Gridworld</h3>
                         <p class="text-gray-600 mb-4">This Gridworld is an MDP. The agent learns the value of each state by iteratively applying the Bellman equation in an algorithm called Value Iteration.</p>
                         <canvas id="gridworld-canvas" width="400" height="400"></canvas>
@@ -244,14 +260,16 @@
                  { id: 'dp', title: 'Dynamic Programming', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Dynamic Programming</h2>
                      <p class="text-lg text-gray-700 mb-6">DP methods solve MDPs given a perfect model of the environment. They use value functions to find optimal policies through bootstrapping.</p>
-                    <div class="card p-6 rounded-lg">
-                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Policy Iteration</h3>
-                         <p class="text-gray-600">This method alternates between two steps:
-                            <br>1. <strong>Policy Evaluation:</strong> Iteratively compute the value function for the current policy $\pi$.
-                            <br>2. <strong>Policy Improvement:</strong> Act greedily with respect to the new value function to create an improved policy $\pi'$.</p>
-                         <h3 class="text-xl font-semibold text-gray-900 mt-4 mb-2">Value Iteration</h3>
-                         <p class="text-gray-600">This method directly finds the optimal value function by iteratively applying the Bellman Optimality update. The optimal policy is then extracted from the converged value function.</p>
-                        <div class="formula" data-katex="\\begin{aligned}v_{k+1}(s) = \\max_a \\sum_{s', r} & p(s', r | s, a) \\\\ & \\cdot [r + \\gamma v_k(s')].\\end{aligned}"></div>
+                    <div class="space-y-6">
+                        <div class="card p-6 rounded-lg">
+                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Policy Iteration & Value Iteration</h3>
+                             <p class="text-gray-600"><strong>Policy Iteration</strong> alternates between evaluating the current policy and improving it by acting greedily. <strong>Value Iteration</strong> directly finds the optimal value function by applying the Bellman Optimality update, from which the optimal policy is extracted.</p>
+                             <div class="formula" data-katex="v_{k+1}(s) = \\max_a \\sum_{s', r} p(s', r | s, a) [r + \\gamma v_k(s')]"></div>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Generalized Policy Iteration (GPI)</h3>
+                             <p class="text-gray-600">GPI is the general idea of letting policy evaluation and policy improvement processes interact. Almost all RL methods can be described as GPI. The two processes drive each other towards convergence on the optimal policy and value function.</p>
+                        </div>
                     </div>
                      <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="dp-quiz" data-correct-answer="a">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
@@ -269,10 +287,18 @@
                 { id: 'mc', title: 'Monte Carlo Methods', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Monte Carlo Methods</h2>
                     <p class="text-lg text-gray-700 mb-6">MC methods learn from complete episodes of experience, requiring no model of the environment. The value of a state is estimated by averaging the returns observed after visiting that state.</p>
-                    <div class="card p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">First-Visit MC Prediction</h3>
-                        <p class="text-gray-600">To evaluate a policy, we run many episodes. For each state $s$ visited in an episode, the return $G_t$ following the <em>first</em> visit to $s$ is used to update $V(s)$.</p>
-                        <div class="formula" data-katex="V(s) \\leftarrow \\text{average}(Returns(s))"></div>
+                    <div class="space-y-6">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">MC Prediction & Control</h3>
+                            <p class="text-gray-600"><strong>Prediction</strong> is estimating the value function for a policy by running episodes and averaging returns. <strong>Control</strong> improves the policy by making it greedy with respect to the learned action values, often using an ε-soft policy to ensure exploration.</p>
+                        </div>
+                         <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Off-Policy Prediction via Importance Sampling</h3>
+                            <p class="text-gray-600">This allows us to learn about a target policy $\\pi$ while following a different behavior policy $b$. Returns from episodes generated by $b$ are weighted by an importance sampling ratio $\\rho$ to correct for the difference between the policies.</p>
+                            <div class="formula" data-katex="\\rho_{t:T-1} = \\prod_{k=t}^{T-1} \\frac{\\pi(A_k|S_k)}{b(A_k|S_k)}"></div>
+                        </div>
+                    </div>
+                    <div class="card p-6 rounded-lg mt-6">
                         <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-4">Interactive Return Averaging</h3>
                         <p class="text-gray-600 mb-4">Click the button to simulate an episode. Each episode generates a random return. Observe how the estimated value (the average) converges to the true mean as more episodes are run.</p>
                         <div class="flex items-center space-x-4">
@@ -302,14 +328,17 @@
                     <p class="text-lg text-gray-700 mb-6">TD learning is a combination of Monte Carlo and Dynamic Programming. Like MC, it learns from experience without a model. Like DP, it bootstraps, updating its estimates based on other learned estimates without waiting for the end of an episode.</p>
                     <div class="space-y-6">
                         <div class="card p-6 rounded-lg">
-                             <h3 class="text-xl font-semibold text-gray-900 mb-2">SARSA (On-policy)</h3>
-                            <p class="text-gray-600">Learns the action-value function based on the policy being followed. The update uses the tuple $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$.</p>
-                            <div class="formula" data-katex="\\begin{aligned}Q(S,A) \\leftarrow Q(S,A) + \\alpha \\big[ &R + \\gamma Q(S',A') \\\\ & - Q(S,A) \\big]\\end{aligned}"></div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">TD Prediction</h3>
+                            <p class="text-gray-600">The simplest TD method, TD(0), updates the value of a state based on the reward received and the estimated value of the *next* state. This is the core of bootstrapping.</p>
+                             <div class="formula" data-katex="V(S_t) \\leftarrow V(S_t) + \\alpha [R_{t+1} + \\gamma V(S_{t+1}) - V(S_t)]"></div>
                         </div>
                         <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Q-Learning (Off-policy)</h3>
-                            <p class="text-gray-600">Learns the optimal action-value function, regardless of the agent's actions. It uses the greedy action in the next state for its update.</p>
-                             <div class="formula" data-katex="\\begin{aligned}Q(S,A) \\leftarrow Q(S,A) + \\alpha \\big[ &R + \\gamma \\max_{a'} Q(S',a') \\\\ & - Q(S,A) \\big]\\end{aligned}"></div>
+                             <h3 class="text-xl font-semibold text-gray-900 mb-2">SARSA (On-policy) vs Q-Learning (Off-policy)</h3>
+                            <p class="text-gray-600"><strong>SARSA</strong> learns the action-value function based on the policy being followed. <strong>Q-Learning</strong> learns the optimal action-value function, regardless of the agent's actions, by using the greedy action in the next state for its update.</p>
+                        </div>
+                         <div class="card p-6 rounded-lg">
+                             <h3 class="text-xl font-semibold text-gray-900 mb-2">N-step TD Methods</h3>
+                             <p class="text-gray-600">These methods unify MC and TD learning by looking ahead $n$ steps to form the update target. When $n=1$, it's standard TD. As $n \\rightarrow \\infty$, it becomes a Monte Carlo method. This allows for a spectrum of algorithms that can trade off bias and variance.</p>
                         </div>
                     </div>
                      <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="td-quiz" data-correct-answer="b">
@@ -328,11 +357,20 @@
                  { id: 'func-approx', title: 'Function Approximation', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Function Approximation</h2>
                      <p class="text-lg text-gray-700 mb-6">For problems with large or continuous state spaces, we approximate the value function with a parameterized function $\\hat{v}(s, \\mathbf{w})$. This allows generalization across states.</p>
-                    <div class="card p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Semi-Gradient TD Methods</h3>
-                        <p class="text-gray-600">We can use gradient-descent methods to update the function's weight vector $\mathbf{w}$. For TD(0), the update rule is:</p>
-                        <div class="formula" data-katex="\\begin{aligned}\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha [R + &\\gamma \\hat{v}(S', \\mathbf{w}) - \\hat{v}(S, \\mathbf{w})] \\\\ &\\cdot \\nabla \\hat{v}(S, \\mathbf{w})\\end{aligned}"></div>
-                        <p class="text-gray-600 mt-4">This is called "semi-gradient" because it ignores the effect of changing $\mathbf{w}$ on the TD target $R + \\gamma \\hat{v}(S', \\mathbf{w})$.</p>
+                     <div class="space-y-6">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Feature Construction & Tile Coding</h3>
+                            <p class="text-gray-600">For linear methods, we must construct a feature vector $\\mathbf{x}(s)$ for each state. <strong>Tile coding</strong> is a popular method for continuous spaces, where the space is overlaid with multiple tilings. Each tile acts as a binary feature, allowing for coarse but effective generalization.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Semi-Gradient TD Methods</h3>
+                            <p class="text-gray-600">We use gradient-descent to update the function's weight vector $\\mathbf{w}$. It's called "semi-gradient" because it ignores the effect of changing $\\mathbf{w}$ on the TD target, but works well in practice.</p>
+                            <div class="formula" data-katex="\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha [R + \\gamma \\hat{v}(S', \\mathbf{w}) - \\hat{v}(S, \\mathbf{w})] \\nabla \\hat{v}(S, \\mathbf{w})"></div>
+                        </div>
+                         <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Off-Policy Function Approximation</h3>
+                            <p class="text-gray-600">Combining off-policy methods (like Q-Learning) with function approximation is challenging. The combination of bootstrapping, off-policy training, and function approximation is known as the "deadly triad" and can lead to instability and divergence.</p>
+                        </div>
                     </div>
                      <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="fa-quiz" data-correct-answer="b">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
@@ -350,11 +388,20 @@
                  { id: 'deep-rl', title: 'Deep Reinforcement Learning', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Deep Reinforcement Learning</h2>
                      <p class="text-lg text-gray-700 mb-6">Deep RL uses deep neural networks as function approximators, allowing agents to learn from high-dimensional sensory inputs like images.</p>
-                     <div class="card p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Deep Q-Network (DQN)</h3>
-                        <p class="text-gray-600">DQN stabilized learning by using two key techniques: Experience Replay and Fixed Target Networks. The network is trained by minimizing a loss function, typically Mean Squared Error, between the Q-network's prediction and a TD target.</p>
-                        <div class="formula" data-katex="\\begin{aligned} L_i(\\theta_i) = \\mathbb{E}&_{(s,a,r,s') \\sim U(D)} \\\\ & \\big[ ( y_i - Q(s,a;\\theta_i) )^2 \\big] \\end{aligned}"></div>
-                        <p class="text-gray-600 mt-2">where the target $y_i = r + \\gamma \\max_{a'} Q(s',a';\\theta_i^-)$ is computed with a separate, periodically updated target network with parameters $\\theta_i^-$.</p>
+                     <div class="space-y-6">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Deep Q-Network (DQN)</h3>
+                            <p class="text-gray-600">DQN stabilized learning by using two key techniques: Experience Replay and Fixed Target Networks. Experience replay stores transitions and samples them randomly to break correlations. A fixed target network provides stable targets for the Q-value updates.</p>
+                        </div>
+                         <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Double DQN</h3>
+                            <p class="text-gray-600">Standard DQN suffers from overestimation bias because it uses the same network to both select the best action and evaluate its value. Double DQN decouples these steps: the main network selects the best action, and the target network evaluates it, reducing the bias.</p>
+                            <div class="formula" data-katex="Y_t^{\\text{DoubleDQN}} = R_{t+1} + \\gamma Q(S_{t+1}, \\arg\\max_{a'} Q(S_{t+1}, a'; \\theta_t); \\theta_t^-)"></div>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Rainbow</h3>
+                            <p class="text-gray-600">Rainbow is not a single new algorithm, but a combination of seven improvements to DQN, including Double DQN, Prioritized Replay, and Dueling Networks. Together, they achieve state-of-the-art performance on Atari benchmarks.</p>
+                        </div>
                     </div>
                      <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="drl-quiz" data-correct-answer="c">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
@@ -372,12 +419,21 @@
                 { id: 'policy-grad', title: 'Policy Gradient Methods', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Policy Gradient Methods</h2>
                     <p class="text-lg text-gray-700 mb-6">These methods directly parameterize and optimize the policy $\\pi(a|s, \\mathbf{\\theta})$. They perform gradient ascent on an objective function $J(\\mathbf{\\theta})$ to find the best policy parameters.</p>
-                    <div class="card p-6 rounded-lg">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">REINFORCE Algorithm</h3>
-                        <p class="text-gray-600">A foundational Monte Carlo policy gradient algorithm. The policy parameters are updated in the direction that makes actions leading to high returns more likely.</p>
-                        <div class="formula" data-katex="\\mathbf{\\theta} \\leftarrow \\mathbf{\\theta} + \\alpha G_t \\nabla \\ln \\pi(A_t|S_t, \\mathbf{\\theta})"></div>
-                         <h3 class="text-xl font-semibold text-gray-900 mt-4 mb-2">Actor-Critic Methods</h3>
-                        <p class="text-gray-600">Combine policy gradients with value function learning. The "Actor" (policy) learns what to do, while the "Critic" (value function) evaluates how good those actions are. The critic's feedback (e.g., the TD error) is used to train the actor, reducing variance and improving stability.</p>
+                    <div class="space-y-6">
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Policy Gradient Theorem</h3>
+                            <p class="text-gray-600">This theorem provides a theoretical foundation by giving an analytic expression for the gradient of the performance objective $J(\\mathbf{\\theta})$, which allows us to perform gradient ascent.</p>
+                            <div class="formula" data-katex="\\nabla J(\\mathbf{\\theta}) \\propto \\sum_s d(s) \\sum_a q_\\pi(s,a) \\nabla \\pi(a|s, \\mathbf{\\theta})"></div>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">REINFORCE with Baseline</h3>
+                            <p class="text-gray-600">The basic REINFORCE algorithm has high variance. We can significantly reduce this by subtracting a learned baseline $b(s)$ (often the value function $V(s)$) from the return $G_t$. This doesn't change the expected gradient but lowers its variance.</p>
+                            <div class="formula" data-katex="\\mathbf{\\theta} \\leftarrow \\mathbf{\\theta} + \\alpha (G_t - b(S_t)) \\nabla \\ln \\pi(A_t|S_t, \\mathbf{\\theta})"></div>
+                        </div>
+                         <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Actor-Critic Methods</h3>
+                            <p class="text-gray-600">Combine policy gradients with value function learning. The "Actor" (policy) learns what to do, while the "Critic" (value function) evaluates how good those actions are. The critic's feedback (e.g., the TD error) is used to train the actor, reducing variance and improving stability.</p>
+                        </div>
                     </div>
                      <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="pg-quiz" data-correct-answer="b">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
@@ -541,16 +597,7 @@
                     </div>
                 `},
             ];
-
-            function renderKatex() {
-                document.querySelectorAll('.formula').forEach(el => {
-                    katex.render(el.dataset.katex, el, {
-                        throwOnError: false,
-                        displayMode: true
-                    });
-                });
-            }
-
+            
             const mainContent = document.getElementById('main-content');
             const sidebarNav = document.getElementById('sidebar-nav');
             const topicHierarchy = {
@@ -588,6 +635,15 @@
                 });
             });
 
+            // Render block-level formulas once after all content is in the DOM.
+            // Inline formulas will be handled by the auto-render script in the <head>.
+            document.querySelectorAll('.formula').forEach(el => {
+                katex.render(el.dataset.katex, el, {
+                    throwOnError: false,
+                    displayMode: true
+                });
+            });
+
             const navLinks = document.querySelectorAll('.sidebar-item');
             const contentSections = document.querySelectorAll('.content-section');
 
@@ -598,8 +654,16 @@
                 navLinks.forEach(link => {
                     link.classList.toggle('active', link.dataset.target === targetId);
                 });
-                renderKatex(); // Render formulas on tab switch
-                // Initialize canvas if it's visible
+                 // Re-render math in the newly activated tab
+                const activeSection = document.getElementById(targetId);
+                if (activeSection) {
+                    renderMathInElement(activeSection, {
+                        delimiters: [{left: '$', right: '$', display: false}],
+                        throwOnError: false
+                    });
+                }
+                
+                // Initialize interactive canvas if it's visible
                 if (targetId === 'mab') initBanditProblem();
                 if (targetId === 'mdp') initGridworld();
                 if (targetId === 'mc') initMC();
