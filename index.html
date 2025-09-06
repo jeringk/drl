@@ -385,86 +385,136 @@
                         <div class="quiz-feedback hidden"></div>
                     </div>
                 `},
-                 { id: 'other', title: 'Other Topics', content: `
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Other Topics</h2>
-                    <div class="space-y-6">
-                        <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Monte-Carlo Tree Search (MCTS)</h3>
-                            <p class="text-gray-600">A powerful planning algorithm that combines the precision of tree search with the generality of random sampling. MCTS doesn't require a model of the environment; instead, it builds a search tree step-by-step based on the outcomes of simulated episodes (rollouts). It's highly effective in games with large branching factors, like Go. The process iterates through four main steps:</p>
-                             <ul class="list-decimal list-inside text-gray-600 space-y-2 mt-4">
-                                <li><strong>Selection:</strong> Starting from the root, traverse the tree by selecting the most promising child nodes until a leaf node is reached.</li>
-                                <li><strong>Expansion:</strong> Add one or more child nodes to the leaf node, representing new actions to explore.</li>
-                                <li><strong>Simulation:</strong> From a new node, run a simulated episode (a "rollout") by choosing random actions until a terminal state is reached. The outcome of this simulation is the return.</li>
-                                <li><strong>Backpropagation:</strong> Update the value estimates of all nodes traversed during the selection phase with the return from the simulation.</li>
-                            </ul>
-                        </div>
-                        <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">AlphaGo, AlphaGo Zero, & MuZero</h3>
-                            <p class="text-gray-600">These landmark systems from DeepMind showcase the power of deep RL and search.
-                                <br>• <strong>AlphaGo:</strong> Famously defeated world champion Lee Sedol. It used two neural networks—a "policy network" to select moves and a "value network" to predict the winner—trained on human expert games. These networks guided a powerful MCTS algorithm.
-                                <br>• <strong>AlphaGo Zero:</strong> A more powerful version that learned entirely from self-play, without any human data. Starting with random play, it discovered strategies far superior to human play, demonstrating that tabula rasa learning could surpass human knowledge.
-                                <br>• <strong>MuZero:</strong> The most general of the three. It masters games like Go, chess, and Atari <span class="italic">without being told the rules</span>. MuZero learns its own model of the environment focused only on the aspects relevant for planning (predicting the next reward, policy, and value), making it a significant step towards more general-purpose algorithms.
-                            </p>
-                        </div>
-                        <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Imitation Learning</h3>
-                            <p class="text-gray-600">A family of methods where an agent learns by observing an expert, rather than through its own trial-and-error. This is useful when exploration is costly, dangerous, or when rewards are hard to define.
-                               <br>• <strong>Behavioral Cloning:</strong> The simplest approach. It treats imitation as a supervised learning problem, training a policy network to map states to the actions an expert took in those states. Its main weakness is the "covariate shift" problem: if the agent enters a state the expert never saw, it may not know how to recover.
-                               <br>• <strong>Inverse Reinforcement Learning (IRL):</strong> A more advanced approach. Instead of just copying actions, IRL tries to infer the expert's hidden reward function. The assumption is that the expert is acting optimally according to some reward signal. Once this reward function is learned, it can be used with any RL algorithm to train a robust policy.
-                            </p>
-                        </div>
+                { id: 'mcts', title: 'MCTS', content: `
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Monte-Carlo Tree Search (MCTS)</h2>
+                    <div class="card p-6 rounded-lg">
+                        <p class="text-gray-600">A powerful planning algorithm that combines the precision of tree search with the generality of random sampling. MCTS doesn't require a model of the environment; instead, it builds a search tree step-by-step based on the outcomes of simulated episodes (rollouts). It's highly effective in games with large branching factors, like Go. The process iterates through four main steps:</p>
+                        <ul class="list-decimal list-inside text-gray-600 space-y-2 mt-4">
+                            <li><strong>Selection:</strong> Starting from the root, traverse the tree by selecting the most promising child nodes until a leaf node is reached.</li>
+                            <li><strong>Expansion:</strong> Add one or more child nodes to the leaf node, representing new actions to explore.</li>
+                            <li><strong>Simulation:</strong> From a new node, run a simulated episode (a "rollout") by choosing random actions until a terminal state is reached. The outcome of this simulation is the return.</li>
+                            <li><strong>Backpropagation:</strong> Update the value estimates of all nodes traversed during the selection phase with the return from the simulation.</li>
+                        </ul>
                     </div>
-                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="other-quiz" data-correct-answer="c">
+                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="mcts-quiz" data-correct-answer="d">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
-                        <p class="font-medium text-gray-700 mb-2">Which algorithm was famously used by AlphaGo, combining search with learned policies and values?</p>
+                        <p class="font-medium text-gray-700 mb-2">Which of the following is NOT one of the four main steps in the MCTS algorithm?</p>
                         <div class="space-y-2">
-                            <label class="flex items-center"><input type="radio" name="other-quiz" value="a" class="mr-2"> Q-Learning</label>
-                            <label class="flex items-center"><input type="radio" name="other-quiz" value="b" class="mr-2"> REINFORCE</label>
-                            <label class="flex items-center"><input type="radio" name="other-quiz" value="c" class="mr-2"> Monte-Carlo Tree Search (MCTS)</label>
-                            <label class="flex items-center"><input type="radio" name="other-quiz" value="d" class="mr-2"> SARSA</label>
+                            <label class="flex items-center"><input type="radio" name="mcts-quiz" value="a" class="mr-2"> Selection</label>
+                            <label class="flex items-center"><input type="radio" name="mcts-quiz" value="b" class="mr-2"> Expansion</label>
+                            <label class="flex items-center"><input type="radio" name="mcts-quiz" value="c" class="mr-2"> Simulation</label>
+                            <label class="flex items-center"><input type="radio" name="mcts-quiz" value="d" class="mr-2"> Backtracking</label>
                         </div>
                         <button class="quiz-submit-btn mt-4 btn-primary font-semibold py-2 px-4 rounded">Check Answer</button>
                         <div class="quiz-feedback hidden"></div>
                     </div>
                 `},
-                 { id: 'special', title: 'Special Sessions', content: `
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Special Sessions</h2>
-                    <div class="space-y-6">
-                        <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Multi-Agent RL (MARL)</h3>
-                            <p class="text-gray-600">MARL extends RL to systems with multiple agents that learn and act in a shared environment. This introduces significant challenges beyond single-agent RL:
-                                <br>• <strong>Non-stationarity:</strong> As other agents learn and change their policies, the environment effectively becomes non-stationary from the perspective of any one agent. What was a good action yesterday might be a bad action today.
-                                <br>• <strong>Credit Assignment:</strong> In cooperative settings, it can be difficult to determine which agent's actions were responsible for the team's success or failure.
-                                <br>• <strong>Coordination/Competition:</strong> Agents must learn to either coordinate with allies or compete effectively against adversaries.
-                                <br>A popular paradigm is "Centralized Training with Decentralized Execution" (CTDE), where agents can share information during training but must act based only on their local observations during execution.
-                            </p>
-                        </div>
-                        <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Human-in-the-Loop (HITL) Learning</h3>
-                            <p class="text-gray-600">Also known as Interactive RL, this approach integrates human feedback into the agent's learning loop. This is valuable when environmental rewards are sparse or when we want to align the agent's behavior with complex human preferences. The feedback can take many forms:</p>
-                             <ul class="list-disc list-inside text-gray-600 space-y-2 mt-4">
-                                <li><strong>Reward Shaping:</strong> A human provides additional reward signals to guide the agent.</li>
-                                <li><strong>Policy Shaping:</strong> A human can directly influence the agent's actions or policy.</li>
-                                <li><strong>Preference-Based RL:</strong> A human provides feedback by comparing two different behaviors from the agent, and the agent learns a reward function that explains these preferences.</li>
-                            </ul>
-                        </div>
-                         <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Safety in RL</h3>
-                            <p class="text-gray-600">Ensuring RL agents behave safely and reliably is critical for real-world deployment in areas like robotics, autonomous driving, and healthcare. The goal is to prevent the agent from causing harm or entering catastrophic states, especially during its initial exploration phase. Key approaches include:
-                                <br>• <strong>Constrained MDPs:</strong> The problem is formulated to maximize a reward function while satisfying explicit safety constraints (e.g., "keep the robot's temperature below a certain threshold").
-                                <br>• <strong>Safe Exploration:</strong> Designing algorithms that explore the environment cautiously, using uncertainty estimates to avoid actions that could lead to dangerous, unknown states.
-                                <br>• <strong>Shielding:</strong> Using a predefined set of safety rules or a formal verification module (a "shield") to monitor and override the agent's actions if they are deemed unsafe.
-                            </p>
-                        </div>
+                { id: 'alphago', title: 'AlphaGo & MuZero', content: `
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">AlphaGo, AlphaGo Zero, & MuZero</h2>
+                    <div class="card p-6 rounded-lg">
+                        <p class="text-gray-600">These landmark systems from DeepMind showcase the power of deep RL and search.
+                            <br>• <strong>AlphaGo:</strong> Famously defeated world champion Lee Sedol. It used two neural networks—a "policy network" to select moves and a "value network" to predict the winner—trained on human expert games. These networks guided a powerful MCTS algorithm.
+                            <br>• <strong>AlphaGo Zero:</strong> A more powerful version that learned entirely from self-play, without any human data. Starting with random play, it discovered strategies far superior to human play, demonstrating that tabula rasa learning could surpass human knowledge.
+                            <br>• <strong>MuZero:</strong> The most general of the three. It masters games like Go, chess, and Atari <span class="italic">without being told the rules</span>. MuZero learns its own model of the environment focused only on the aspects relevant for planning (predicting the next reward, policy, and value), making it a significant step towards more general-purpose algorithms.
+                        </p>
                     </div>
-                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="special-quiz" data-correct-answer="a">
+                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="alphago-quiz" data-correct-answer="b">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
-                        <p class="font-medium text-gray-700 mb-2">What is the main challenge in Multi-Agent RL (MARL) that distinguishes it from single-agent RL?</p>
+                        <p class="font-medium text-gray-700 mb-2">What was a key difference between AlphaGo and AlphaGo Zero?</p>
                         <div class="space-y-2">
-                            <label class="flex items-center"><input type="radio" name="special-quiz" value="a" class="mr-2"> The environment becomes non-stationary from a single agent's perspective.</label>
-                            <label class="flex items-center"><input type="radio" name="special-quiz" value="b" class="mr-2"> The rewards are always zero.</label>
-                            <label class="flex items-center"><input type="radio" name="special-quiz" value="c" class="mr-2"> There are no states, only actions.</label>
-                            <label class="flex items-center"><input type="radio" name="special-quiz" value="d" class="mr-2"> It is impossible to use value functions.</label>
+                            <label class="flex items-center"><input type="radio" name="alphago-quiz" value="a" class="mr-2"> AlphaGo used MCTS, but AlphaGo Zero did not.</label>
+                            <label class="flex items-center"><input type="radio" name="alphago-quiz" value="b" class="mr-2"> AlphaGo Zero learned entirely from self-play without human data.</label>
+                            <label class="flex items-center"><input type="radio" name="alphago-quiz" value="c" class="mr-2"> AlphaGo Zero was designed only for the game of Chess.</label>
+                            <label class="flex items-center"><input type="radio" name="alphago-quiz" value="d" class="mr-2"> AlphaGo used a single neural network.</label>
+                        </div>
+                        <button class="quiz-submit-btn mt-4 btn-primary font-semibold py-2 px-4 rounded">Check Answer</button>
+                        <div class="quiz-feedback hidden"></div>
+                    </div>
+                `},
+                { id: 'imitation-learning', title: 'Imitation Learning', content: `
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Imitation Learning</h2>
+                    <div class="card p-6 rounded-lg">
+                        <p class="text-gray-600">A family of methods where an agent learns by observing an expert, rather than through its own trial-and-error. This is useful when exploration is costly, dangerous, or when rewards are hard to define.
+                           <br>• <strong>Behavioral Cloning:</strong> The simplest approach. It treats imitation as a supervised learning problem, training a policy network to map states to the actions an expert took in those states. Its main weakness is the "covariate shift" problem: if the agent enters a state the expert never saw, it may not know how to recover.
+                           <br>• <strong>Inverse Reinforcement Learning (IRL):</strong> A more advanced approach. Instead of just copying actions, IRL tries to infer the expert's hidden reward function. The assumption is that the expert is acting optimally according to some reward signal. Once this reward function is learned, it can be used with any RL algorithm to train a robust policy.
+                        </p>
+                    </div>
+                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="imitation-quiz" data-correct-answer="c">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
+                        <p class="font-medium text-gray-700 mb-2">What is the main weakness of the Behavioral Cloning approach to imitation learning?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="imitation-quiz" value="a" class="mr-2"> It is computationally very expensive.</label>
+                            <label class="flex items-center"><input type="radio" name="imitation-quiz" value="b" class="mr-2"> It requires a perfect model of the environment.</label>
+                            <label class="flex items-center"><input type="radio" name="imitation-quiz" value="c" class="mr-2"> It can fail in unseen states due to covariate shift.</label>
+                            <label class="flex items-center"><input type="radio" name="imitation-quiz" value="d" class="mr-2"> It cannot learn a stochastic policy.</label>
+                        </div>
+                        <button class="quiz-submit-btn mt-4 btn-primary font-semibold py-2 px-4 rounded">Check Answer</button>
+                        <div class="quiz-feedback hidden"></div>
+                    </div>
+                `},
+                { id: 'marl', title: 'Multi-Agent RL', content: `
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Multi-Agent RL (MARL)</h2>
+                    <div class="card p-6 rounded-lg">
+                        <p class="text-gray-600">MARL extends RL to systems with multiple agents that learn and act in a shared environment. This introduces significant challenges beyond single-agent RL:
+                            <br>• <strong>Non-stationarity:</strong> As other agents learn and change their policies, the environment effectively becomes non-stationary from the perspective of any one agent. What was a good action yesterday might be a bad action today.
+                            <br>• <strong>Credit Assignment:</strong> In cooperative settings, it can be difficult to determine which agent's actions were responsible for the team's success or failure.
+                            <br>• <strong>Coordination/Competition:</strong> Agents must learn to either coordinate with allies or compete effectively against adversaries.
+                            <br>A popular paradigm is "Centralized Training with Decentralized Execution" (CTDE), where agents can share information during training but must act based only on their local observations during execution.
+                        </p>
+                    </div>
+                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="marl-quiz" data-correct-answer="c">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
+                        <p class="font-medium text-gray-700 mb-2">The paradigm where agents share information during training but not execution is called:</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="marl-quiz" value="a" class="mr-2"> Independent Q-Learning</label>
+                            <label class="flex items-center"><input type="radio" name="marl-quiz" value="b" class="mr-2"> Policy Gradients</label>
+                            <label class="flex items-center"><input type="radio" name="marl-quiz" value="c" class="mr-2"> Centralized Training with Decentralized Execution (CTDE)</label>
+                            <label class="flex items-center"><input type="radio" name="marl-quiz" value="d" class="mr-2"> Markov Games</label>
+                        </div>
+                        <button class="quiz-submit-btn mt-4 btn-primary font-semibold py-2 px-4 rounded">Check Answer</button>
+                        <div class="quiz-feedback hidden"></div>
+                    </div>
+                `},
+                { id: 'hitl', title: 'Human-in-the-Loop RL', content: `
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Human-in-the-Loop (HITL) Learning</h2>
+                    <div class="card p-6 rounded-lg">
+                        <p class="text-gray-600">Also known as Interactive RL, this approach integrates human feedback into the agent's learning loop. This is valuable when environmental rewards are sparse or when we want to align the agent's behavior with complex human preferences. The feedback can take many forms:</p>
+                         <ul class="list-disc list-inside text-gray-600 space-y-2 mt-4">
+                            <li><strong>Reward Shaping:</strong> A human provides additional reward signals to guide the agent.</li>
+                            <li><strong>Policy Shaping:</strong> A human can directly influence the agent's actions or policy.</li>
+                            <li><strong>Preference-Based RL:</strong> A human provides feedback by comparing two different behaviors from the agent, and the agent learns a reward function that explains these preferences.</li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="hitl-quiz" data-correct-answer="d">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
+                        <p class="font-medium text-gray-700 mb-2">Which of the following is NOT a common form of human feedback in HITL learning?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="hitl-quiz" value="a" class="mr-2"> Reward Shaping</label>
+                            <label class="flex items-center"><input type="radio" name="hitl-quiz" value="b" class="mr-2"> Policy Shaping</label>
+                            <label class="flex items-center"><input type="radio" name="hitl-quiz" value="c" class="mr-2"> Preference-Based Feedback</label>
+                            <label class="flex items-center"><input type="radio" name="hitl-quiz" value="d" class="mr-2"> State Abstraction</label>
+                        </div>
+                        <button class="quiz-submit-btn mt-4 btn-primary font-semibold py-2 px-4 rounded">Check Answer</button>
+                        <div class="quiz-feedback hidden"></div>
+                    </div>
+                `},
+                { id: 'safety', title: 'Safety in RL', content: `
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Safety in RL</h2>
+                    <div class="card p-6 rounded-lg">
+                        <p class="text-gray-600">Ensuring RL agents behave safely and reliably is critical for real-world deployment in areas like robotics, autonomous driving, and healthcare. The goal is to prevent the agent from causing harm or entering catastrophic states, especially during its initial exploration phase. Key approaches include:
+                            <br>• <strong>Constrained MDPs:</strong> The problem is formulated to maximize a reward function while satisfying explicit safety constraints (e.g., "keep the robot's temperature below a certain threshold").
+                            <br>• <strong>Safe Exploration:</strong> Designing algorithms that explore the environment cautiously, using uncertainty estimates to avoid actions that could lead to dangerous, unknown states.
+                            <br>• <strong>Shielding:</strong> Using a predefined set of safety rules or a formal verification module (a "shield") to monitor and override the agent's actions if they are deemed unsafe.
+                        </p>
+                    </div>
+                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="safety-quiz" data-correct-answer="a">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
+                        <p class="font-medium text-gray-700 mb-2">Using a formal module to override an agent's potentially unsafe actions is known as:</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="safety-quiz" value="a" class="mr-2"> Shielding</label>
+                            <label class="flex items-center"><input type="radio" name="safety-quiz" value="b" class="mr-2"> Reward Shaping</label>
+                            <label class="flex items-center"><input type="radio" name="safety-quiz" value="c" class="mr-2"> Constrained MDPs</label>
+                            <label class="flex items-center"><input type="radio" name="safety-quiz" value="d" class="mr-2"> Safe Exploration</label>
                         </div>
                         <button class="quiz-submit-btn mt-4 btn-primary font-semibold py-2 px-4 rounded">Check Answer</button>
                         <div class="quiz-feedback hidden"></div>
@@ -488,8 +538,8 @@
                 'Core Problems & Frameworks': ['mab', 'mdp'],
                 'Solution Methods': ['dp', 'mc', 'td'],
                 'Advanced Topics': ['func-approx', 'deep-rl', 'policy-grad'],
-                'Other Topics': ['other'],
-                'Special Sessions': ['special']
+                'Planning & Case Studies': ['mcts', 'alphago', 'imitation-learning'],
+                'Frontiers in RL': ['marl', 'hitl', 'safety']
             };
 
             // Populate sidebar and content
@@ -801,6 +851,4 @@
     </script>
 </body>
 </html>
-
-
 
