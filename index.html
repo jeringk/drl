@@ -75,6 +75,13 @@
         .btn-primary:hover {
             background-color: #357ABD;
         }
+         .btn-secondary {
+            background-color: #7DBA31;
+             color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #689D2A;
+        }
         .btn-danger {
             background-color: #D0021B;
             color: white;
@@ -388,22 +395,35 @@
                 { id: 'mcts', title: 'MCTS', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Monte-Carlo Tree Search (MCTS)</h2>
                     <div class="card p-6 rounded-lg">
-                        <p class="text-gray-600">A powerful planning algorithm that combines the precision of tree search with the generality of random sampling. MCTS doesn't require a model of the environment; instead, it builds a search tree step-by-step based on the outcomes of simulated episodes (rollouts). It's highly effective in games with large branching factors, like Go. The process iterates through four main steps:</p>
+                        <p class="text-gray-600">A powerful planning algorithm that combines the precision of tree search with the generality of random sampling. MCTS doesn't require a model of the environment; instead, it builds a search tree step-by-step based on the outcomes of simulated episodes (rollouts). The process iterates through four main steps:</p>
                         <ul class="list-decimal list-inside text-gray-600 space-y-2 mt-4">
-                            <li><strong>Selection:</strong> Starting from the root, traverse the tree by selecting the most promising child nodes until a leaf node is reached.</li>
+                            <li><strong>Selection:</strong> Starting from the root, traverse the tree by selecting the most promising child nodes until a leaf node is reached. A common selection strategy is UCB1 (Upper Confidence Bound 1), which balances exploitation and exploration.</li>
+                             <div class="formula" data-katex="\\text{UCB1}(v) = \\underbrace{\\frac{Q(v)}{N(v)}}_{\\text{Exploitation}} + \\underbrace{c \\sqrt{\\frac{\\ln N(p)}{N(v)}}}_{\\text{Exploration}}"></div>
+                             <p class="text-sm text-gray-500 mt-2 text-center">Where $Q(v)$ is total reward from node $v$, $N(v)$ is its visit count, $N(p)$ is the parent's visit count, and $c$ is an exploration constant.</p>
                             <li><strong>Expansion:</strong> Add one or more child nodes to the leaf node, representing new actions to explore.</li>
-                            <li><strong>Simulation:</strong> From a new node, run a simulated episode (a "rollout") by choosing random actions until a terminal state is reached. The outcome of this simulation is the return.</li>
-                            <li><strong>Backpropagation:</strong> Update the value estimates of all nodes traversed during the selection phase with the return from the simulation.</li>
+                            <li><strong>Simulation:</strong> From a new node, run a simulated episode (a "rollout") by choosing random actions until a terminal state is reached. The outcome is the return (e.g., +1 for a win, -1 for a loss).</li>
+                            <li><strong>Backpropagation:</strong> Update the value estimates ($Q$) and visit counts ($N$) of all nodes traversed during the selection phase with the return from the simulation.</li>
                         </ul>
+                    </div>
+                    <div class="card p-6 rounded-lg mt-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Interactive MCTS Animation</h3>
+                        <p class="text-gray-600 mb-4">Watch the MCTS algorithm build a search tree step-by-step. Each iteration performs the four key steps to evaluate the best next move from the root node.</p>
+                        <canvas id="mcts-canvas" width="600" height="400"></canvas>
+                        <div class="mt-4 flex items-center space-x-4">
+                            <button id="mcts-step-btn" class="btn-primary font-semibold py-2 px-4 rounded">Step</button>
+                            <button id="mcts-play-btn" class="btn-secondary font-semibold py-2 px-4 rounded">Auto-Play</button>
+                            <button id="mcts-reset-btn" class="btn-danger font-semibold py-2 px-4 rounded">Reset</button>
+                            <div id="mcts-status" class="text-gray-700 font-medium p-2 bg-yellow-100 rounded">Status: Ready</div>
+                        </div>
                     </div>
                     <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="mcts-quiz" data-correct-answer="d">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
-                        <p class="font-medium text-gray-700 mb-2">Which of the following is NOT one of the four main steps in the MCTS algorithm?</p>
+                        <p class="font-medium text-gray-700 mb-2">The UCB1 formula is primarily used in which step of the MCTS algorithm?</p>
                         <div class="space-y-2">
-                            <label class="flex items-center"><input type="radio" name="mcts-quiz" value="a" class="mr-2"> Selection</label>
+                            <label class="flex items-center"><input type="radio" name="mcts-quiz" value="a" class="mr-2"> Backpropagation</label>
                             <label class="flex items-center"><input type="radio" name="mcts-quiz" value="b" class="mr-2"> Expansion</label>
                             <label class="flex items-center"><input type="radio" name="mcts-quiz" value="c" class="mr-2"> Simulation</label>
-                            <label class="flex items-center"><input type="radio" name="mcts-quiz" value="d" class="mr-2"> Backtracking</label>
+                            <label class="flex items-center"><input type="radio" name="mcts-quiz" value="d" class="mr-2"> Selection</label>
                         </div>
                         <button class="quiz-submit-btn mt-4 btn-primary font-semibold py-2 px-4 rounded">Check Answer</button>
                         <div class="quiz-feedback hidden"></div>
@@ -583,6 +603,7 @@
                 if (targetId === 'mab') initBanditProblem();
                 if (targetId === 'mdp') initGridworld();
                 if (targetId === 'mc') initMC();
+                if (targetId === 'mcts') initMCTSAnimation();
             }
 
             sidebarNav.addEventListener('click', (e) => {
@@ -847,6 +868,196 @@
 
                 drawGrid();
             }
+
+            // --- MCTS Animation ---
+            function initMCTSAnimation() {
+                const canvas = document.getElementById('mcts-canvas');
+                if (!canvas || canvas.dataset.initialized) return;
+                canvas.dataset.initialized = 'true';
+
+                const ctx = canvas.getContext('2d');
+                const statusEl = document.getElementById('mcts-status');
+                const stepBtn = document.getElementById('mcts-step-btn');
+                const playBtn = document.getElementById('mcts-play-btn');
+                const resetBtn = document.getElementById('mcts-reset-btn');
+
+                let tree = null;
+                let nodeIdCounter = 0;
+                let isPlaying = false;
+                let playInterval = null;
+
+                const NODE_RADIUS = 25;
+                const EXPLORATION_CONSTANT = 1.41; // sqrt(2)
+
+                function createNode(parent) {
+                    return {
+                        id: nodeIdCounter++,
+                        parent: parent,
+                        children: [],
+                        visits: 0,
+                        value: 0,
+                        x: 0, y: 0,
+                        numUnexplored: Math.floor(2 + Math.random() * 2) // Each node has 2-3 possible moves
+                    };
+                }
+
+                function reset() {
+                    nodeIdCounter = 0;
+                    tree = createNode(null);
+                    tree.x = canvas.width / 2;
+                    tree.y = 50;
+                    statusEl.textContent = "Status: Ready";
+                    if(playInterval) clearInterval(playInterval);
+                    isPlaying = false;
+                    playBtn.textContent = 'Auto-Play';
+                    stepBtn.disabled = false;
+                    drawTree();
+                }
+
+                function drawNode(node, highlight = 'black') {
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, NODE_RADIUS, 0, Math.PI * 2);
+                    ctx.fillStyle = 'white';
+                    ctx.fill();
+                    ctx.strokeStyle = highlight;
+                    ctx.lineWidth = highlight === 'black' ? 2 : 4;
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#3D4451';
+                    ctx.font = '12px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const valueText = `${node.value.toFixed(1)} / ${node.visits}`;
+                    ctx.fillText(valueText, node.x, node.y);
+                    ctx.font = '10px Inter';
+                    ctx.fillText(`id: ${node.id}`, node.x, node.y + 12);
+                }
+
+                function drawEdge(parent, child) {
+                    ctx.beginPath();
+                    ctx.moveTo(parent.x, parent.y + NODE_RADIUS);
+                    ctx.lineTo(child.x, child.y - NODE_RADIUS);
+                    ctx.strokeStyle = '#a1a1aa';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                
+                function setNodePositions(node, x, y, width) {
+                    node.x = x;
+                    node.y = y;
+                    if (node.children.length === 0) return;
+
+                    const childWidth = width / node.children.length;
+                    node.children.forEach((child, i) => {
+                        setNodePositions(child, x - width/2 + childWidth/2 + i*childWidth, y + 80, childWidth);
+                    });
+                }
+
+                function drawTree(highlightPath = []) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    setNodePositions(tree, canvas.width / 2, 50, canvas.width * 0.8);
+                    
+                    const nodesToDraw = [tree];
+                    while(nodesToDraw.length > 0) {
+                        const node = nodesToDraw.pop();
+                        if (node.parent) drawEdge(node.parent, node);
+                        nodesToDraw.push(...node.children);
+                    }
+
+                     const highlightSet = new Set(highlightPath.map(n => n.id));
+                     const nodesToDrawAgain = [tree];
+                      while(nodesToDrawAgain.length > 0) {
+                        const node = nodesToDrawAgain.pop();
+                        const highlightColor = highlightSet.has(node.id) ? '#4A90E2' : 'black';
+                        drawNode(node, highlightColor);
+                        nodesToDrawAgain.push(...node.children);
+                    }
+                }
+                
+                function ucb1(node) {
+                    if (node.visits === 0) return Infinity;
+                    const exploitation = node.value / node.visits;
+                    const exploration = EXPLORATION_CONSTANT * Math.sqrt(Math.log(node.parent.visits) / node.visits);
+                    return exploitation + exploration;
+                }
+
+                async function runIteration() {
+                    stepBtn.disabled = true;
+                    
+                    // 1. Selection
+                    statusEl.textContent = '1. Selection: Finding best leaf...';
+                    let currentNode = tree;
+                    let path = [currentNode];
+                    while (currentNode.children.length > 0 && currentNode.numUnexplored === 0) {
+                        currentNode = currentNode.children.reduce((best, child) => ucb1(child) > ucb1(best) ? child : best);
+                        path.push(currentNode);
+                        drawTree(path);
+                        await new Promise(r => setTimeout(r, 400));
+                    }
+                    drawTree(path);
+
+                    // 2. Expansion
+                    statusEl.textContent = '2. Expansion: Adding a new node.';
+                    await new Promise(r => setTimeout(r, 500));
+                    if (currentNode.numUnexplored > 0) {
+                        const newNode = createNode(currentNode);
+                        currentNode.children.push(newNode);
+                        currentNode.numUnexplored--;
+                        currentNode = newNode; // The new node becomes current for simulation
+                        path.push(currentNode);
+                    }
+                    drawTree(path);
+
+
+                    // 3. Simulation
+                    statusEl.textContent = '3. Simulation: Running random rollout...';
+                    await new Promise(r => setTimeout(r, 500));
+                    const result = Math.random() > 0.5 ? 1 : -1; // Win or Loss
+                     // Simple visual for simulation
+                    ctx.beginPath();
+                    ctx.arc(currentNode.x, currentNode.y, NODE_RADIUS + 5, 0, Math.PI * 2);
+                    ctx.strokeStyle = result > 0 ? '#10B981' : '#EF4444';
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                    ctx.font = 'bold 20px Inter';
+                    ctx.fillStyle = result > 0 ? '#10B981' : '#EF4444';
+                    ctx.fillText(result > 0 ? '+1' : '-1', currentNode.x + 40, currentNode.y);
+
+
+                    // 4. Backpropagation
+                    statusEl.textContent = '4. Backpropagation: Updating values.';
+                    await new Promise(r => setTimeout(r, 800));
+                    for (let i = path.length - 1; i >= 0; i--) {
+                        const node = path[i];
+                        node.visits++;
+                        node.value += result;
+                        drawTree(path.slice(0, i + 1));
+                         await new Promise(r => setTimeout(r, 400));
+                    }
+
+                    statusEl.textContent = "Status: Ready";
+                    stepBtn.disabled = false;
+                }
+
+                stepBtn.addEventListener('click', runIteration);
+                resetBtn.addEventListener('click', reset);
+                playBtn.addEventListener('click', () => {
+                    isPlaying = !isPlaying;
+                    if (isPlaying) {
+                        playBtn.textContent = 'Pause';
+                        stepBtn.disabled = true;
+                        runIteration();
+                        playInterval = setInterval(runIteration, (path) => (path ? path.length * 800 + 2200 : 5000));
+                    } else {
+                        playBtn.textContent = 'Auto-Play';
+                        stepBtn.disabled = false;
+                        clearInterval(playInterval);
+                    }
+                });
+
+                reset();
+            }
+
         });
     </script>
 </body>
