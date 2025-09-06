@@ -390,15 +390,28 @@
                     <div class="space-y-6">
                         <div class="card p-6 rounded-lg">
                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Monte-Carlo Tree Search (MCTS)</h3>
-                            <p class="text-gray-600">A powerful planning algorithm used in programs like AlphaGo. It builds a search tree of possible future moves, using random sampling (Monte Carlo rollouts) to estimate the value of different actions from the current state.</p>
+                            <p class="text-gray-600">A powerful planning algorithm that combines the precision of tree search with the generality of random sampling. MCTS doesn't require a model of the environment; instead, it builds a search tree step-by-step based on the outcomes of simulated episodes (rollouts). It's highly effective in games with large branching factors, like Go. The process iterates through four main steps:</p>
+                             <ul class="list-decimal list-inside text-gray-600 space-y-2 mt-4">
+                                <li><strong>Selection:</strong> Starting from the root, traverse the tree by selecting the most promising child nodes until a leaf node is reached.</li>
+                                <li><strong>Expansion:</strong> Add one or more child nodes to the leaf node, representing new actions to explore.</li>
+                                <li><strong>Simulation:</strong> From a new node, run a simulated episode (a "rollout") by choosing random actions until a terminal state is reached. The outcome of this simulation is the return.</li>
+                                <li><strong>Backpropagation:</strong> Update the value estimates of all nodes traversed during the selection phase with the return from the simulation.</li>
+                            </ul>
                         </div>
                         <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">AlphaGo, AlphaGo Zero, MuZero</h3>
-                            <p class="text-gray-600">Landmark RL systems that achieved superhuman performance in Go. AlphaGo used a combination of deep learning and MCTS. AlphaGo Zero learned entirely from self-play with no human data. MuZero generalized this approach to learn the rules and dynamics of the environment for itself, allowing it to master games without being told the rules.</p>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">AlphaGo, AlphaGo Zero, & MuZero</h3>
+                            <p class="text-gray-600">These landmark systems from DeepMind showcase the power of deep RL and search.
+                                <br>• <strong>AlphaGo:</strong> Famously defeated world champion Lee Sedol. It used two neural networks—a "policy network" to select moves and a "value network" to predict the winner—trained on human expert games. These networks guided a powerful MCTS algorithm.
+                                <br>• <strong>AlphaGo Zero:</strong> A more powerful version that learned entirely from self-play, without any human data. Starting with random play, it discovered strategies far superior to human play, demonstrating that tabula rasa learning could surpass human knowledge.
+                                <br>• <strong>MuZero:</strong> The most general of the three. It masters games like Go, chess, and Atari <span class="italic">without being told the rules</span>. MuZero learns its own model of the environment focused only on the aspects relevant for planning (predicting the next reward, policy, and value), making it a significant step towards more general-purpose algorithms.
+                            </p>
                         </div>
                         <div class="card p-6 rounded-lg">
                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Imitation Learning</h3>
-                            <p class="text-gray-600">Learning policies by observing and mimicking an expert's demonstrations (Behavioral Cloning), rather than through trial-and-error. It's a useful way to bootstrap learning when exploration is dangerous or expensive.</p>
+                            <p class="text-gray-600">A family of methods where an agent learns by observing an expert, rather than through its own trial-and-error. This is useful when exploration is costly, dangerous, or when rewards are hard to define.
+                               <br>• <strong>Behavioral Cloning:</strong> The simplest approach. It treats imitation as a supervised learning problem, training a policy network to map states to the actions an expert took in those states. Its main weakness is the "covariate shift" problem: if the agent enters a state the expert never saw, it may not know how to recover.
+                               <br>• <strong>Inverse Reinforcement Learning (IRL):</strong> A more advanced approach. Instead of just copying actions, IRL tries to infer the expert's hidden reward function. The assumption is that the expert is acting optimally according to some reward signal. Once this reward function is learned, it can be used with any RL algorithm to train a robust policy.
+                            </p>
                         </div>
                     </div>
                     <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="other-quiz" data-correct-answer="c">
@@ -419,15 +432,29 @@
                     <div class="space-y-6">
                         <div class="card p-6 rounded-lg">
                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Multi-Agent RL (MARL)</h3>
-                            <p class="text-gray-600">Extends RL to scenarios with multiple interacting agents. This introduces new challenges as the environment becomes non-stationary from the perspective of any single agent, and agents may need to cooperate or compete.</p>
+                            <p class="text-gray-600">MARL extends RL to systems with multiple agents that learn and act in a shared environment. This introduces significant challenges beyond single-agent RL:
+                                <br>• <strong>Non-stationarity:</strong> As other agents learn and change their policies, the environment effectively becomes non-stationary from the perspective of any one agent. What was a good action yesterday might be a bad action today.
+                                <br>• <strong>Credit Assignment:</strong> In cooperative settings, it can be difficult to determine which agent's actions were responsible for the team's success or failure.
+                                <br>• <strong>Coordination/Competition:</strong> Agents must learn to either coordinate with allies or compete effectively against adversaries.
+                                <br>A popular paradigm is "Centralized Training with Decentralized Execution" (CTDE), where agents can share information during training but must act based only on their local observations during execution.
+                            </p>
                         </div>
                         <div class="card p-6 rounded-lg">
                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Human-in-the-Loop (HITL) Learning</h3>
-                            <p class="text-gray-600">Incorporates human feedback directly into the learning process. This can be more efficient than relying solely on sparse environmental rewards, helping the agent learn complex tasks faster and more reliably.</p>
+                            <p class="text-gray-600">Also known as Interactive RL, this approach integrates human feedback into the agent's learning loop. This is valuable when environmental rewards are sparse or when we want to align the agent's behavior with complex human preferences. The feedback can take many forms:</p>
+                             <ul class="list-disc list-inside text-gray-600 space-y-2 mt-4">
+                                <li><strong>Reward Shaping:</strong> A human provides additional reward signals to guide the agent.</li>
+                                <li><strong>Policy Shaping:</strong> A human can directly influence the agent's actions or policy.</li>
+                                <li><strong>Preference-Based RL:</strong> A human provides feedback by comparing two different behaviors from the agent, and the agent learns a reward function that explains these preferences.</li>
+                            </ul>
                         </div>
                          <div class="card p-6 rounded-lg">
                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Safety in RL</h3>
-                            <p class="text-gray-600">A critical area of research focused on ensuring that RL agents behave safely and reliably, especially during exploration and when deployed in the real world. This involves designing agents that avoid catastrophic failures and respect constraints.</p>
+                            <p class="text-gray-600">Ensuring RL agents behave safely and reliably is critical for real-world deployment in areas like robotics, autonomous driving, and healthcare. The goal is to prevent the agent from causing harm or entering catastrophic states, especially during its initial exploration phase. Key approaches include:
+                                <br>• <strong>Constrained MDPs:</strong> The problem is formulated to maximize a reward function while satisfying explicit safety constraints (e.g., "keep the robot's temperature below a certain threshold").
+                                <br>• <strong>Safe Exploration:</strong> Designing algorithms that explore the environment cautiously, using uncertainty estimates to avoid actions that could lead to dangerous, unknown states.
+                                <br>• <strong>Shielding:</strong> Using a predefined set of safety rules or a formal verification module (a "shield") to monitor and override the agent's actions if they are deemed unsafe.
+                            </p>
                         </div>
                     </div>
                     <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="special-quiz" data-correct-answer="a">
@@ -461,7 +488,8 @@
                 'Core Problems & Frameworks': ['mab', 'mdp'],
                 'Solution Methods': ['dp', 'mc', 'td'],
                 'Advanced Topics': ['func-approx', 'deep-rl', 'policy-grad'],
-                'Case Studies & Others': ['other', 'special']
+                'Other Topics': ['other'],
+                'Special Sessions': ['special']
             };
 
             // Populate sidebar and content
@@ -773,5 +801,6 @@
     </script>
 </body>
 </html>
+
 
 
