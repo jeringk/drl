@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, { delimiters: [{left: '$', right: '$', display: false}], throwOnError: false });"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -257,21 +257,51 @@
                         <div class="quiz-feedback hidden"></div>
                     </div>
                 `},
-                 { id: 'dp', title: 'Dynamic Programming', content: `
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Dynamic Programming</h2>
-                     <p class="text-lg text-gray-700 mb-6">DP methods solve MDPs given a perfect model of the environment. They use value functions to find optimal policies through bootstrapping.</p>
+                { id: 'dp', title: 'Dynamic Programming', content: `
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Dynamic Programming in RL</h2>
+                    <p class="text-lg text-gray-700 mb-6">Dynamic Programming (DP) refers to a collection of algorithms that can compute optimal policies given a perfect model of the environment as a Markov Decision Process (MDP). The key idea is to use value functions to organize and structure the search for good policies. DP methods are powerful but are limited by the need for a full model and their computational expense.</p>
                     <div class="space-y-6">
                         <div class="card p-6 rounded-lg">
-                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Policy Iteration & Value Iteration</h3>
-                             <p class="text-gray-600"><strong>Policy Iteration</strong> alternates between evaluating the current policy and improving it by acting greedily. <strong>Value Iteration</strong> directly finds the optimal value function by applying the Bellman Optimality update, from which the optimal policy is extracted.</p>
-                             <div class="formula" data-katex="v_{k+1}(s) = \\max_a \\sum_{s', r} p(s', r | s, a) [r + \\gamma v_k(s')]"></div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Policy Iteration</h3>
+                            <p class="text-gray-600">This method finds an optimal policy by alternating between two processes: policy evaluation and policy improvement.</p>
+                            <ul class="list-decimal list-inside text-gray-600 space-y-2 mt-4">
+                                <li><strong>Policy Evaluation:</strong> For the current policy $\\pi$, we compute the state-value function $v_\\pi$. This is done by iteratively applying the Bellman expectation equation until the values converge. For each state $s$:</li>
+                                <div class="formula" data-katex="v_{k+1}(s) = \\sum_{a} \\pi(a|s) \\sum_{s', r} p(s', r | s, a) [r + \\gamma v_k(s')]"></div>
+                                <li><strong>Policy Improvement:</strong> Once we have $v_\\pi$, we improve the policy by acting greedily with respect to it. For each state $s$, we find the action that maximizes the expected return:</li>
+                                <div class="formula" data-katex="\\pi'(s) = \\arg\\max_a \\sum_{s', r} p(s', r | s, a) [r + \\gamma v_\\pi(s')]"></div>
+                            </ul>
+                            <p class="text-gray-600 mt-4">This process is guaranteed to converge to an optimal policy.</p>
                         </div>
                         <div class="card p-6 rounded-lg">
-                             <h3 class="text-xl font-semibold text-gray-900 mb-2">Generalized Policy Iteration (GPI)</h3>
-                             <p class="text-gray-600">GPI is the general idea of letting policy evaluation and policy improvement processes interact. Almost all RL methods can be described as GPI. The two processes drive each other towards convergence on the optimal policy and value function.</p>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Value Iteration</h3>
+                            <p class="text-gray-600">Value Iteration combines policy evaluation and improvement into a single step. It directly finds the optimal value function by iteratively applying the Bellman Optimality update rule. The process is simpler but each iteration is more complex than in policy evaluation.</p>
+                            <div class="formula" data-katex="v_{k+1}(s) = \\max_a \\sum_{s', r} p(s', r | s, a) [r + \\gamma v_k(s')]"></div>
+                            <p class="text-gray-600 mt-4">Once the value function converges to $v_*$, the optimal policy can be extracted by choosing the action that maximizes the expected return in each state.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Generalized Policy Iteration (GPI)</h3>
+                            <p class="text-gray-600">GPI is the general idea of letting policy evaluation and policy improvement processes interact. One process learns the value function for the current policy, and the other improves the policy based on the current value function. Most RL algorithms can be framed as GPI, where the two processes may not fully complete before the other begins (e.g., updating values only once before improving the policy).</p>
+                            <div class="text-center my-4">
+                                <svg width="250" height="200" class="mx-auto">
+                                    <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4A90E2"/></marker></defs>
+                                    <ellipse cx="125" cy="50" rx="60" ry="25" fill="#E9E4DB" stroke="#3D4451"/>
+                                    <text x="125" y="55" text-anchor="middle" font-size="16">Policy π</text>
+                                    <ellipse cx="125" cy="150" rx="60" ry="25" fill="#E9E4DB" stroke="#3D4451"/>
+                                    <text x="125" y="155" text-anchor="middle" font-size="16">Value V</text>
+                                    <path d="M 125 75 Q 175 100 125 125" stroke="#4A90E2" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+                                    <text x="165" y="95" fill="#4A90E2" font-size="12">Evaluation</text>
+                                    <path d="M 125 125 Q 75 100 125 75" stroke="#D0021B" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+                                    <text x="80" y="95" fill="#D0021B" font-size="12" text-anchor="end">Improvement</text>
+                                </svg>
+                                <p class="text-sm text-gray-500">The policy and value function interact until they are optimal and consistent.</p>
+                            </div>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Efficiency of Dynamic Programming</h3>
+                            <p class="text-gray-600">While DP methods are guaranteed to find optimal policies, their practicality is limited. They require a full model of the environment's dynamics, which is often unavailable. Furthermore, they suffer from the <strong>curse of dimensionality</strong>: the state space (and thus the computation required) grows exponentially with the number of state variables. This makes them infeasible for problems with large or continuous state spaces.</p>
                         </div>
                     </div>
-                     <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="dp-quiz" data-correct-answer="a">
+                    <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="dp-quiz" data-correct-answer="a">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
                         <p class="font-medium text-gray-700 mb-2">What is a key requirement for using Dynamic Programming to solve an RL problem?</p>
                         <div class="space-y-2">
@@ -286,38 +316,57 @@
                 `},
                 { id: 'mc', title: 'Monte Carlo Methods', content: `
                     <h2 class="text-3xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Monte Carlo Methods</h2>
-                    <p class="text-lg text-gray-700 mb-6">MC methods learn from complete episodes of experience, requiring no model of the environment. The value of a state is estimated by averaging the returns observed after visiting that state.</p>
+                    <p class="text-lg text-gray-700 mb-6">Monte Carlo (MC) methods are a class of model-free algorithms that learn directly from episodes of experience. Unlike DP, they do not require a model of the environment's dynamics. MC methods wait until the end of an episode to make value-function updates, based on the actual observed return.</p>
                     <div class="space-y-6">
                         <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">MC Prediction & Control</h3>
-                            <p class="text-gray-600"><strong>Prediction</strong> is estimating the value function for a policy by running episodes and averaging returns. <strong>Control</strong> improves the policy by making it greedy with respect to the learned action values, often using an ε-soft policy to ensure exploration.</p>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Monte Carlo Prediction (Policy Evaluation)</h3>
+                            <p class="text-gray-600">MC Prediction is used to estimate $v_\\pi(s)$ for a given policy $\\pi$. The value of a state is estimated by averaging the returns that have followed visits to that state. There are two main variants:</p>
+                             <ul class="list-disc list-inside text-gray-600 space-y-2 mt-4">
+                                <li><strong>First-visit MC:</strong> Averages the returns for the first time a state $s$ is visited in each episode.</li>
+                                <li><strong>Every-visit MC:</strong> Averages the returns for every visit to a state $s$ in each episode.</li>
+                             </ul>
+                             <p class="text-gray-600 mt-2">The update rule is simple: after an episode provides a return $G_t$ following a visit to $S_t$:</p>
+                            <div class="formula" data-katex="V(S_t) \\leftarrow V(S_t) + \\alpha (G_t - V(S_t))"></div>
+                            <p class="text-gray-600 mt-2">Where $\\alpha$ is a constant step-size parameter.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Monte Carlo Control</h3>
+                            <p class="text-gray-600">MC Control uses the GPI framework to find an optimal policy. It learns action-values $q_\\pi(s,a)$ instead of state-values to make policy improvement possible (since we don't have a model). The loop is similar to Policy Iteration:</p>
+                            <ol class="list-decimal list-inside text-gray-600 space-y-1 mt-2">
+                                <li>Run an episode following the current policy $\\pi$.</li>
+                                <li>For each state-action pair $(s,a)$ in the episode, update its Q-value by averaging returns.</li>
+                                <li>Improve the policy by making it $\\epsilon$-greedy with respect to the new Q-values.</li>
+                            </ol>
+                            <p class="text-gray-600 mt-2">To ensure sufficient exploration, we can use an $\\epsilon$-greedy policy or exploring starts.</p>
                         </div>
                          <div class="card p-6 rounded-lg">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Off-Policy Prediction via Importance Sampling</h3>
-                            <p class="text-gray-600">This allows us to learn about a target policy $\\pi$ while following a different behavior policy $b$. Returns from episodes generated by $b$ are weighted by an importance sampling ratio $\\rho$ to correct for the difference between the policies.</p>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Off-Policy Learning via Importance Sampling</h3>
+                            <p class="text-gray-600">Off-policy methods learn about a target policy $\\pi$ while following a different, more exploratory behavior policy $b$. This is crucial for control problems. To correct for the fact that the data comes from $b$, we weight the returns by the <strong>importance sampling ratio</strong>, which is the relative probability of the trajectory under the two policies:</p>
                             <div class="formula" data-katex="\\rho_{t:T-1} = \\prod_{k=t}^{T-1} \\frac{\\pi(A_k|S_k)}{b(A_k|S_k)}"></div>
+                            <p class="text-gray-600 mt-2"><strong>Weighted Importance Sampling</strong> is often preferred in practice because it has lower variance. It uses a weighted average for the value function update:</p>
+                            <div class="formula" data-katex="V(S_t) \\leftarrow V(S_t) + \\frac{W_t}{C(S_t)}(G_t - V(S_t))"></div>
+                            <p class="text-gray-600 mt-2 text-center">where $C(S_t)$ is the sum of weights for state $S_t$.</p>
                         </div>
                     </div>
                     <div class="card p-6 rounded-lg mt-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-4">Interactive Return Averaging</h3>
-                        <p class="text-gray-600 mb-4">Click the button to simulate an episode. Each episode generates a random return. Observe how the estimated value (the average) converges to the true mean as more episodes are run.</p>
-                        <div class="flex items-center space-x-4">
-                             <button id="mc-episode-btn" class="btn-primary font-semibold py-2 px-4 rounded">Run Episode</button>
-                             <div>
-                                <p class="text-gray-600">Estimated Value: <span id="mc-value" class="font-bold text-gray-900">0.00</span></p>
-                                <p class="text-gray-600">Episodes: <span id="mc-count" class="font-bold text-gray-900">0</span></p>
-                             </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mt-6 mb-4">Interactive MC Example: Blackjack</h3>
+                        <p class="text-gray-600 mb-4">Here, an agent learns to play Blackjack using Monte Carlo. It follows a simple policy (stick on 20 or 21, hit otherwise) and learns the value of each state by averaging returns over many games. The state is defined by the player's sum, the dealer's showing card, and whether the player has a usable ace.</p>
+                        <div class="flex items-center space-x-4 mb-4">
+                            <button id="blackjack-play1-btn" class="btn-primary font-semibold py-2 px-4 rounded">Play 1 Game</button>
+                            <button id="blackjack-play100-btn" class="btn-secondary font-semibold py-2 px-4 rounded">Play 100 Games</button>
+                            <button id="blackjack-reset-btn" class="btn-danger font-semibold py-2 px-4 rounded">Reset</button>
+                            <span id="blackjack-games-played" class="text-gray-600">Games Played: 0</span>
                         </div>
-                        <div id="mc-returns-log" class="mt-4 p-2 bg-gray-50 h-24 overflow-y-auto rounded border"></div>
+                        <canvas id="blackjack-canvas" width="600" height="350"></canvas>
                     </div>
                     <div class="mt-6 card p-6 rounded-lg quiz-container" data-quiz-id="mc-quiz" data-correct-answer="c">
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Quick Quiz</h3>
-                        <p class="font-medium text-gray-700 mb-2">How do Monte Carlo methods estimate value functions?</p>
+                        <p class="font-medium text-gray-700 mb-2">What is the main advantage of Monte Carlo methods over Dynamic Programming?</p>
                         <div class="space-y-2">
-                            <label class="flex items-center"><input type="radio" name="mc-quiz" value="a" class="mr-2"> By bootstrapping from other estimates.</label>
-                            <label class="flex items-center"><input type="radio" name="mc-quiz" value="b" class="mr-2"> By using a model to predict outcomes.</label>
-                            <label class="flex items-center"><input type="radio" name="mc-quiz" value="c" class="mr-2"> By averaging returns from complete episodes.</label>
-                            <label class="flex items-center"><input type="radio" name="mc-quiz" value="d" class="mr-2"> By solving the Bellman equation directly.</label>
+                            <label class="flex items-center"><input type="radio" name="mc-quiz" value="a" class="mr-2"> They are guaranteed to be faster.</label>
+                            <label class="flex items-center"><input type="radio" name="mc-quiz" value="b" class="mr-2"> They update values after every step.</label>
+                            <label class="flex items-center"><input type="radio" name="mc-quiz" value="c" class="mr-2"> They do not require a model of the environment.</label>
+                            <label class="flex items-center"><input type="radio" name="mc-quiz" value="d" class="mr-2"> They have lower variance.</label>
                         </div>
                         <button class="quiz-submit-btn mt-4 btn-primary font-semibold py-2 px-4 rounded">Check Answer</button>
                         <div class="quiz-feedback hidden"></div>
@@ -656,7 +705,7 @@
                 });
                  // Re-render math in the newly activated tab
                 const activeSection = document.getElementById(targetId);
-                if (activeSection) {
+                if (activeSection && window.renderMathInElement) {
                     renderMathInElement(activeSection, {
                         delimiters: [{left: '$', right: '$', display: false}],
                         throwOnError: false
@@ -666,7 +715,7 @@
                 // Initialize interactive canvas if it's visible
                 if (targetId === 'mab') initBanditProblem();
                 if (targetId === 'mdp') initGridworld();
-                if (targetId === 'mc') initMC();
+                if (targetId === 'mc') initBlackjackMC();
                 if (targetId === 'mcts') initMCTSAnimation();
             }
 
@@ -705,7 +754,7 @@
             });
 
 
-            // Initial state
+            // Initial state and initial render
             switchTab('intro-rl');
 
             // --- Multi-Armed Bandit ---
@@ -806,34 +855,156 @@
                 setup();
             }
 
-            // --- Monte Carlo ---
-            function initMC() {
-                 const mcBtn = document.getElementById('mc-episode-btn');
-                 if(!mcBtn || mcBtn.dataset.initialized) return;
-                 mcBtn.dataset.initialized = 'true';
+            // --- Monte Carlo Blackjack ---
+            function initBlackjackMC() {
+                const canvas = document.getElementById('blackjack-canvas');
+                if (!canvas || canvas.dataset.initialized) return;
+                canvas.dataset.initialized = 'true';
 
-                 const mcValueEl = document.getElementById('mc-value');
-                 const mcCountEl = document.getElementById('mc-count');
-                 const mcLogEl = document.getElementById('mc-returns-log');
-                 
-                 let totalReturn = 0;
-                 let count = 0;
-                 const TRUE_MEAN = 5;
+                const ctx = canvas.getContext('2d');
+                const play1Btn = document.getElementById('blackjack-play1-btn');
+                const play100Btn = document.getElementById('blackjack-play100-btn');
+                const resetBtn = document.getElementById('blackjack-reset-btn');
+                const gamesPlayedEl = document.getElementById('blackjack-games-played');
+                
+                let V = {}; // State-value function: V[state_string] = { sum: N, count: N }
+                let gamesPlayed = 0;
 
-                 mcBtn.addEventListener('click', () => {
-                    count++;
-                    const newReturn = TRUE_MEAN + (Math.random() - 0.5) * 4; // Random return around TRUE_MEAN
-                    totalReturn += newReturn;
-                    const averageReturn = totalReturn / count;
+                const reset = () => {
+                    V = {};
+                    gamesPlayed = 0;
+                    gamesPlayedEl.textContent = `Games Played: 0`;
+                    drawValueFunction();
+                };
+                
+                const getCard = () => {
+                    let card = Math.min(10, Math.floor(Math.random() * 13) + 1);
+                    return card === 1 ? 11 : card; // Ace is 11
+                };
+
+                const getHandSum = (hand) => {
+                    let sum = hand.reduce((a, b) => a + b, 0);
+                    let aces = hand.filter(c => c === 11).length;
+                    while (sum > 21 && aces > 0) {
+                        sum -= 10;
+                        aces--;
+                    }
+                    return sum;
+                };
+
+                const runEpisode = () => {
+                    let playerHand = [getCard(), getCard()];
+                    let dealerHand = [getCard(), getCard()];
+                    let episode = []; // Store (state, action, reward) tuples
+
+                    // Player's turn
+                    while(true) {
+                        let playerSum = getHandSum(playerHand);
+                        if(playerSum > 21) break; // Player busts
+                        
+                        let usableAce = playerHand.includes(11) && getHandSum(playerHand.map(c => c === 11 ? 1 : c)) <= 10;
+                        let state = `${playerSum}-${dealerHand[0]}-${usableAce}`;
+                        
+                        // Policy: stick on 20 or 21, otherwise hit
+                        let action = playerSum >= 20 ? 'stick' : 'hit';
+                        episode.push({ state });
+
+                        if(action === 'stick') break;
+                        playerHand.push(getCard());
+                    }
                     
-                    mcValueEl.textContent = averageReturn.toFixed(2);
-                    mcCountEl.textContent = count;
+                    // Dealer's turn
+                    let playerSum = getHandSum(playerHand);
+                    let reward = 0;
+                    if(playerSum > 21) {
+                        reward = -1; // Player busts
+                    } else {
+                        while(getHandSum(dealerHand) < 17) {
+                            dealerHand.push(getCard());
+                        }
+                        let dealerSum = getHandSum(dealerHand);
+                        if(dealerSum > 21 || playerSum > dealerSum) {
+                            reward = 1; // Dealer busts or player wins
+                        } else if(playerSum < dealerSum) {
+                            reward = -1; // Dealer wins
+                        } else {
+                            reward = 0; // Draw
+                        }
+                    }
+
+                    // Update V using first-visit MC
+                    const visitedStates = new Set();
+                    for(const step of episode) {
+                        if(!visitedStates.has(step.state)) {
+                            if(!V[step.state]) V[step.state] = { sum: 0, count: 0 };
+                            V[step.state].sum += reward;
+                            V[step.state].count++;
+                            visitedStates.add(step.state);
+                        }
+                    }
+                    gamesPlayed++;
+                };
+
+                const runMultipleEpisodes = (count) => {
+                    for(let i=0; i<count; i++) runEpisode();
+                    gamesPlayedEl.textContent = `Games Played: ${gamesPlayed}`;
+                    drawValueFunction();
+                };
+
+                const drawValueFunction = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
-                    const logEntry = document.createElement('div');
-                    logEntry.textContent = `Episode ${count}: Return = ${newReturn.toFixed(2)}`;
-                    mcLogEl.appendChild(logEntry);
-                    mcLogEl.scrollTop = mcLogEl.scrollHeight;
-                 });
+                    const drawGrid = (x_offset, y_offset, title) => {
+                        ctx.fillStyle = '#3D4451';
+                        ctx.font = 'bold 14px Inter';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(title, x_offset + 125, y_offset - 10);
+
+                        const playerSums = Array.from({length: 10}, (_, i) => 21 - i); // 21 down to 12
+                        const dealerCards = Array.from({length: 10}, (_, i) => i + 1); // A, 2..10
+                        
+                        const colWidth = 25;
+                        const rowHeight = 25;
+
+                        for(let r=0; r < playerSums.length; r++) {
+                             for(let c=0; c < dealerCards.length; c++) {
+                                let stateStr = `${playerSums[r]}-${dealerCards[c] === 1 ? 11 : dealerCards[c]}-${title.includes('Usable Ace')}`;
+                                let value = V[stateStr] ? V[stateStr].sum / V[stateStr].count : 0;
+                                
+                                let color = 'rgba(200, 200, 200, 0.5)';
+                                if(value > 0) color = `rgba(74, 222, 128, ${Math.abs(value)})`; // green
+                                else if(value < 0) color = `rgba(248, 113, 113, ${Math.abs(value)})`; // red
+                                
+                                ctx.fillStyle = color;
+                                ctx.fillRect(x_offset + c * colWidth, y_offset + r * rowHeight, colWidth, rowHeight);
+                                ctx.strokeStyle = '#e5e7eb';
+                                ctx.strokeRect(x_offset + c * colWidth, y_offset + r * rowHeight, colWidth, rowHeight);
+
+                                ctx.fillStyle = Math.abs(value) > 0.5 ? 'white' : 'black';
+                                ctx.font = '9px Inter';
+                                ctx.fillText(value.toFixed(2), x_offset + c * colWidth + colWidth/2, y_offset + r * rowHeight + rowHeight/2);
+                             }
+                        }
+                        // Draw labels
+                        ctx.fillStyle = '#3D4451';
+                        ctx.font = '11px Inter';
+                        for(let r=0; r < playerSums.length; r++) {
+                            ctx.fillText(playerSums[r], x_offset - 15, y_offset + r*rowHeight + rowHeight/2);
+                        }
+                         for(let c=0; c < dealerCards.length; c++) {
+                            ctx.fillText(dealerCards[c] === 1 ? 'A' : dealerCards[c], x_offset + c * colWidth + colWidth/2, y_offset + playerSums.length*rowHeight + 10);
+                        }
+                    };
+
+                    drawGrid(40, 40, "With Usable Ace");
+                    drawGrid(330, 40, "No Usable Ace");
+                };
+
+                play1Btn.addEventListener('click', () => runMultipleEpisodes(1));
+                play100Btn.addEventListener('click', () => runMultipleEpisodes(100));
+                resetBtn.addEventListener('click', reset);
+                
+                reset();
             }
 
             // --- Gridworld ---
